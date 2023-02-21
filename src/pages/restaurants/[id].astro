@@ -1,0 +1,27 @@
+---
+import Card from '../../components/Card.astro';
+import Layout from '../../layouts/Layout.astro';
+import type { Restaurant,RootObject } from '../models';
+
+
+export async function getStaticPaths() {
+  const restaurants  =  await fetch(`http://127.0.0.1:1337/api/restaurants`).then(res => res.json() as Promise<RootObject>)
+  const res =  restaurants.data.map(restaurant =>  ({params : { id: restaurant.id}}))
+  return res;
+}
+
+const { id} =  Astro.params;
+const restaurantItem = await fetch(`http://127.0.0.1:1337/api/restaurants/${id}`) 
+.then(x  => x.json() as Promise<Restaurant>)
+---
+
+<Layout title={restaurantItem.data.attributes.name}>
+  <h1>{restaurantItem.data.attributes.name}</h1>
+  <p>{restaurantItem.data.attributes.price}</p>
+  <p>{restaurantItem.data.attributes.updatedAt}</p>
+  <Card
+				href="/"
+				title="home"
+				body=""
+			/>
+</Layout> 
